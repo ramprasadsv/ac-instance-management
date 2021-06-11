@@ -43,9 +43,7 @@ pipeline {
                    sh(script: "ls -ltr", returnStatus: true)
                    CONFIGDETAILS = sh(script: 'cat parameters.json', returnStdout: true).trim()
                    def config = jsonParse(CONFIGDETAILS)
-                    //INSTANCEALIAS = config.instanceAlias
-                    INSTANCEALIAS = "sdlkfjsdfklsffff"
-                    ARN = "arn:aws:connect:us-east-1:357837012270:instance/d4cc33fa-9542-4fb2-a27c-1e836a1dbbe1"
+                    INSTANCEALIAS = config.instanceAlias
                     ENABLEINBOUNDCALLS = config.enableInboundCalls
                     ENABLEOUTBOUNDCALLS = config.enableOutboundCalls
                     IDENTITYMANAGEMENTTYPE = config.identityManagementType
@@ -64,7 +62,7 @@ pipeline {
         }      
       
       
-        /*stage('Create an Amazon Connect Instance'){
+        stage('Create an Amazon Connect Instance'){
             steps {
                 echo 'Creating the Amazon Connect Instance'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
@@ -197,7 +195,7 @@ pipeline {
                 }
             }
         }
-        */
+        
         stage('Enable Call Recordings'){
             steps{
                 echo 'Enabling call recordings into S3'
@@ -267,7 +265,7 @@ pipeline {
             }
         }
 
-        stage('Enable Chat Attachments'){
+        /*stage('Enable Chat Attachments'){
             steps{
                 echo 'Enabling S3 for storing chat attachments'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
@@ -288,7 +286,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
         
     }
 }

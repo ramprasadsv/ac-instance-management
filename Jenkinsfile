@@ -206,7 +206,7 @@ pipeline {
                         def js = jsonParse(sc)
                         sc = toJSON(js)
                         echo sc
-                        sc = sc.replace("\"", "\\"");
+                        sc = sc.replace("\"", "\\"")
                         echo sc
                         js = null
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CALL_RECORDINGS --storage-config \'${sc}\'", returnStdout: true).trim()

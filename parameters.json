@@ -1,0 +1,15 @@
+{
+  "instanceAlias" : "",
+  "enableInboundCalls" : "true",
+  "enableOutboundCalls" : "true",
+  "identityManagementType" : "CONNECT_MANAGED",
+  "approvedOrigins" : "https://www.amazon.com,https://www.aws.com",
+  "approvedLambdas" : "arn:aws:lambda:us-east-1:357837012270:function:GetCustomerInfo",
+  "approvedLexBots" : "us-east-1:BookTrip",
+  "contactFlowLogs" : "true",
+  "contactTraceRecords" : "arn:aws:firehose:us-east-1:357837012270:deliverystream/hcl-instance-ctr",
+  "agentEvents" : "arn:aws:kinesis:us-east-1:357837012270:stream/amzn-connect-agent",
+  "callRecordings" : '{"StorageType": "S3","S3Config": {"BucketName": "amazon-connect-92cff7c508d9","BucketPrefix": "connect/Instance_Alias/CallRecordings","EncryptionConfig":{"EncryptionType":"KMS","KeyId": "arn:aws:kms:us-east-1:357837012270:key/0725a969-88d2-4ad8-bd1c-69157746371e"}}}',
+  "chatTranscripts" : '{"StorageType": "S3","S3Config": {"BucketName": "amazon-connect-92cff7c508d9","BucketPrefix": "connect/Instance_Alias/Chat_Transcripts","EncryptionConfig":{"EncryptionType":"KMS","KeyId": "arn:aws:kms:us-east-1:357837012270:key/0725a969-88d2-4ad8-bd1c-69157746371e"}}}',
+  "scheduledReports" : '{"StorageType": "S3","S3Config": {"BucketName": "amazon-connect-92cff7c508d9","BucketPrefix": "connect/Instance_Alias/Reports","EncryptionConfig":{"EncryptionType":"KMS","KeyId": "arn:aws:kms:us-east-1:357837012270:key/0725a969-88d2-4ad8-bd1c-69157746371e"}}}'
+}

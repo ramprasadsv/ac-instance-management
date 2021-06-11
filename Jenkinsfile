@@ -24,6 +24,7 @@ String CONTACTTRACERECORDS = ""
 String AGENTEVENTS = ""
 String CALLRECORDINGS = ""
 String CHATTRANSCRIPTS = ""
+String CHATATTACHMENTS = ""
 String SCHEDULEDREPORTS = ""
 
 pipeline {
@@ -56,6 +57,7 @@ pipeline {
                     AGENTEVENTS = config.agentEvents
                     CALLRECORDINGS = config.callRecordings
                     CHATTRANSCRIPTS = config.chatTranscripts
+                    CHATATTACHMENTS = config.chatAttachments
                     SCHEDULEDREPORTS = config.scheduledReports                    
                 }
             }
@@ -259,6 +261,29 @@ pipeline {
                         echo sc
                         js = null
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type SCHEDULED_REPORTS --storage-config ${sc}", returnStdout: true).trim()
+                        echo "Chat Transcripts : ${di}"
+                    }
+                }
+            }
+        }
+
+        stage('Enable Chat Attachments'){
+            steps{
+                echo 'Enabling S3 for storing chat attachments'
+                withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
+                    script {
+                        def sc = CHATATTACHMENTS
+                        sc = sc.replaceAll('Instance_Alias', INSTANCEALIAS)
+                        echo sc
+                        def js = jsonParse(sc)
+                        sc = "StorageType=S3"
+                        //ssociationId=string,StorageType=string,S3Config={BucketName=string,BucketPrefix=string,EncryptionConfig={EncryptionType=string,KeyId=string}}
+                        sc = sc.concat(",S3Config=\\{BucketName=").concat(js.S3Config.BucketName).concat(",BucketPrefix=").concat(js.S3Config.BucketPrefix)
+                        sc = sc.concat(",EncryptionConfig=\\{EncryptionType=").concat(js.S3Config.EncryptionConfig.EncryptionType)
+                        sc = sc.concat(",KeyId=").concat(js.S3Config.EncryptionConfig.KeyId).concat("\\}\\}")
+                        echo sc
+                        js = null
+                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CHAT_ATTACHMENTS --storage-config ${sc}", returnStdout: true).trim()
                         echo "Chat Transcripts : ${di}"
                     }
                 }

@@ -204,7 +204,7 @@ pipeline {
                         sc = sc.replaceAll('Instance_Alias', INSTANCEALIAS)
                         echo sc
                         def js = jsonParse(sc)
-                        String sc = "StorageType=S3"
+                        sc = "StorageType=S3"
                         //ssociationId=string,StorageType=string,S3Config={BucketName=string,BucketPrefix=string,EncryptionConfig={EncryptionType=string,KeyId=string}}
                         sc = sc.concat(",S3Config={BucketName=").concat(js.S3Config.BucketName).concat(",BucketPrefix=").concat(js.S3Config.BucketPrefix)
                         sc = sc.concat(",EncryptionConfig={EncryptionType=").concat(js.S3Config.EncryptionConfig.EncryptionType)

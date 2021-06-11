@@ -43,7 +43,7 @@ pipeline {
                    CONFIGDETAILS = sh(script: 'cat parameters.json', returnStdout: true).trim()
                    def config = jsonParse(CONFIGDETAILS)
                     //INSTANCEALIAS = config.instanceAlias
-                    INSTANCEALIAS = "sdlkfjsdfklseeeeee"
+                    INSTANCEALIAS = "sdlkfjsdfklsf"
                     ENABLEINBOUNDCALLS = config.enableInboundCalls
                     ENABLEOUTBOUNDCALLS = config.enableOutboundCalls
                     IDENTITYMANAGEMENTTYPE = config.identityManagementType

@@ -6,7 +6,22 @@ def jsonParse(def json) {
     new groovy.json.JsonSlurper().parseText(json)
 }
 
-def ARN
+String CONFIGDETAILS = ""
+String ARN = ""
+String INSTANCEALIAS = ""
+String ENABLEINBOUNDCALLS = ""
+String ENABLEOUTBOUNDCALLS = ""
+String IDENTITYMANAGEMENTTYPE = ""
+String APPROVEDORIGINS = ""
+String APPROVEDLAMBDAS = ""
+String APPROVEDLEXBOTS = ""
+String CONTACTFLOWLOGS = ""
+String CONTACTTRACERECORDS = ""
+String AGENTEVENTS = ""
+String CALLRECORDINGS = ""
+String CHATTRANSCRIPTS = ""
+String SCHEDULEDREPORTS = ""
+
 pipeline {
     agent any
     stages {
@@ -23,8 +38,19 @@ pipeline {
                    sh(script: "ls -ltr", returnStatus: true)
                    CONFIGDETAILS = sh(script: 'cat parameters.json', returnStdout: true).trim()
                    def config = jsonParse(CONFIGDETAILS)
-                   INSTANCEARN = config.primaryInstance
-                   TRAGETINSTANCEARN = config.targetInstance
+                    INSTANCEALIAS = config.instanceAlias
+                    ENABLEINBOUNDCALLS = config.enableInboundCalls
+                    ENABLEOUTBOUNDCALLS = config.enableOutboundCalls
+                    IDENTITYMANAGEMENTTYPE = config.identityManagementType
+                    APPROVEDORIGINS = config.approvedOrigins
+                    APPROVEDLAMBDAS = config.approvedLambdas
+                    APPROVEDLEXBOTS = config.approvedLexBots
+                    CONTACTFLOWLOGS = config.contactFlowLogs
+                    CONTACTTRACERECORDS = config.contactTraceRecords
+                    AGENTEVENTS = config.agentEvents
+                    CALLRECORDINGS = config.callRecordings
+                    CHATTRANSCRIPTS = config.chatTranscripts
+                    SCHEDULEDREPORTS = config.scheduledReports                    
                 }
             }
         }      
@@ -36,8 +62,16 @@ pipeline {
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     // List all the Buckets
                    script {
-                        //sh(script: "aws --version", returnStatus: true)
-                      def parsedJson =  sh(script: "aws connect create-instance --identity-management-type CONNECT_MANAGED --instance-alias ${params.Instance_Alias} --inbound-calls-enabled --outbound-calls-enabled", returnStdout: true).trim()
+                      String inboundCallsEnabled = "" 
+                      String outboundCallsEnabled = ""
+                      if(ENABLEINBOUNDCALLS.equals("true")) {
+                          inboundCallsEnabled = "--inbound-calls-enabled" 
+                      }
+                      if(ENABLEOUTBOUNDCALLS.equals("true")) {
+                          outboundCallsEnabled = "--outbound-calls-enabled" 
+                      }
+                       
+                      def parsedJson =  sh(script: "aws connect create-instance --identity-management-type CONNECT_MANAGED --instance-alias ${INSTANCEALIAS} ${inboundCallsEnabled} ${outboundCallsEnabled}", returnStdout: true).trim()
                       echo "Instance details : ${parsedJson}"
                       def instance = jsonParse(parsedJson)
                       echo "ARN : ${instance.Arn}" 
@@ -71,96 +105,112 @@ pipeline {
                 }
             }
         }
+        
         stage('Approved Origins'){
             steps{
                 echo 'Adding approved origings'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def di =  sh(script: "aws connect associate-approved-origin --instance-id ${ARN} --origin ${params.Approved_Origins}", returnStdout: true).trim()
-                        echo "Approved Origins : ${di}"
+                        def ao = APPROVEDORIGINS.split(",")
+                        ao.each { obj ->
+                            def di =  sh(script: "aws connect associate-approved-origin --instance-id ${ARN} --origin ${obj}", returnStdout: true).trim()
+                            echo "Approved Origins : ${di}"
+                        };
                     }
                 }
             }
         }
+        
         stage('Approved Lambda'){
             steps{
                 echo 'Adding approved Lambdas'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def di =  sh(script: "aws connect associate-lambda-function --instance-id ${ARN} --function-arn ${params.Approved_Lambdas}", returnStdout: true).trim()
-                        echo "Approved Lambdas : ${di}"
+                        def ao = APPROVEDLAMBDAS.split(",")
+                        ao.each { obj ->
+                            def di =  sh(script: "aws connect associate-lambda-function --instance-id ${ARN} --function-arn ${obj}", returnStdout: true).trim()
+                            echo "Approved Lambdas : ${di}"
+                        };
                     }
                 }
             }
         }
+        
         stage('Approved Lexbot'){
             steps{
                 echo 'Adding Approved Lexbots'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        String[] str = params.Approved_LexBots.split(":") 
-                        def region = str[0]
-                        def lexBot = str[1]
-                        
-                        def di =  sh(script: "aws connect associate-lex-bot --instance-id ${ARN} --lex-bot Name=${lexBot},LexRegion=${region}", returnStdout: true).trim()
-                        echo "Instance LexBot : ${di}"
+                        def ao = APPROVEDLEXBOTS.split(",")
+                        ao.each { obj ->
+                            String[] str = obj.split(":") 
+                            def region = str[0]
+                            def lexBot = str[1]
+                            def di =  sh(script: "aws connect associate-lex-bot --instance-id ${ARN} --lex-bot Name=${lexBot},LexRegion=${region}", returnStdout: true).trim()
+                            echo "Instance LexBot : ${di}"                            
+                        };
                     }
                 }
             }
         }
+        
         stage('Enable Contact Flow Logs'){
             steps{
                 echo 'Enabling Contact Flow Logs'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
-                    script {
-                        def di =  sh(script: "aws connect update-instance-attribute --instance-id ${ARN} --attribute-type CONTACTFLOW_LOGS --value ${params.ContactFlow_Logs}", returnStdout: true).trim()
+                    script {                        
+                        def di =  sh(script: "aws connect update-instance-attribute --instance-id ${ARN} --attribute-type CONTACTFLOW_LOGS --value ${CONTACTFLOWLOGS}", returnStdout: true).trim()
                         echo "Enable Contact Flow Logs : ${di}"
                     }
                 }
             }
         }
+        
         stage('Enable Contact Trace Records'){
             steps{
                 echo 'Enabling CTRs into Firehose'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CONTACT_TRACE_RECORDS --storage-config StorageType=KINESIS_FIREHOSE,KinesisFirehoseConfig={FirehoseArn=${params.Contact_Trace_Records}}", returnStdout: true).trim()
+                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CONTACT_TRACE_RECORDS --storage-config StorageType=KINESIS_FIREHOSE,KinesisFirehoseConfig={FirehoseArn=${CONTACTTRACERECORDS}}", returnStdout: true).trim()
                         echo "CTR : ${di}"
                     }
                 }
             }
         }
+        
         stage('Enable Agent Realtime Events'){
             steps{
                 echo 'Enabling Agent Realtime events in Kinesis Data Streams'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type AGENT_EVENTS --storage-config StorageType=KINESIS_STREAM,KinesisStreamConfig={StreamArn=${params.Agent_Events}}", returnStdout: true).trim()
+                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type AGENT_EVENTS --storage-config StorageType=KINESIS_STREAM,KinesisStreamConfig={StreamArn=${AGENTEVENTS}}", returnStdout: true).trim()
                         echo "Agent Events : ${di}"
                     }
                 }
             }
         }
+        
         stage('Enable Call Recordings'){
             steps{
                 echo 'Enabling call recordings into S3'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def sc = params.Call_Recordings
-                        sc = sc.replaceAll('Instance_Alias', params.Instance_Alias)
+                        def sc = CALLRECORDINGS
+                        sc = sc.replaceAll('Instance_Alias', INSTANCEALIAS)
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CALL_RECORDINGS --storage-config ${sc}", returnStdout: true).trim()
                         echo "Call Recordings : ${di}"
                     }
                 }
             }
         }
+        
         stage('Enable Chat Transcripts'){
             steps{
                 echo 'Enabling chat transcripts into S3'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def sc = params.Chat_Transcripts
-                        sc = sc.replaceAll('Instance_Alias', params.Instance_Alias)
+                        def sc = CHATTRANSCRIPTS
+                        sc = sc.replaceAll('Instance_Alias', INSTANCEALIAS)
                         echo sc
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CHAT_TRANSCRIPTS --storage-config ${sc}", returnStdout: true).trim()
                         echo "Chat Transcripts : ${di}"
@@ -168,13 +218,14 @@ pipeline {
                 }
             }
         }
+        
         stage('Enable Scheduled Reports'){
             steps{
                 echo 'Enabling S3 for storing scheduled reports'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def sc = params.Scheduled_Reports
-                        sc = sc.replaceAll('Instance_Alias', params.Instance_Alias)
+                        def sc = SCHEDULEDREPORTS
+                        sc = sc.replaceAll('Instance_Alias', INSTANCEALIAS)
                         echo sc
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type SCHEDULED_REPORTS --storage-config ${sc}", returnStdout: true).trim()
                         echo "Chat Transcripts : ${di}"

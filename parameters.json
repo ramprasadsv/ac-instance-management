@@ -1,5 +1,5 @@
 {
-  "instanceAlias" : "",
+  "instanceAlias" : "jenksdsere",
   "enableInboundCalls" : "true",
   "enableOutboundCalls" : "true",
   "identityManagementType" : "CONNECT_MANAGED",

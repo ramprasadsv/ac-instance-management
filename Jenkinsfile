@@ -43,7 +43,7 @@ pipeline {
                    CONFIGDETAILS = sh(script: 'cat parameters.json', returnStdout: true).trim()
                    def config = jsonParse(CONFIGDETAILS)
                     //INSTANCEALIAS = config.instanceAlias
-                    INSTANCEALIAS = "sdlkfjsdfkls"
+                    INSTANCEALIAS = "sdlkfjsdfklsd"
                     ENABLEINBOUNDCALLS = config.enableInboundCalls
                     ENABLEOUTBOUNDCALLS = config.enableOutboundCalls
                     IDENTITYMANAGEMENTTYPE = config.identityManagementType
@@ -200,12 +200,13 @@ pipeline {
                 echo 'Enabling call recordings into S3'
                 withAWS(credentials: '71b568ab-3ca8-4178-b03f-c112f0fd5030', region: 'us-east-1') {
                     script {
-                        def sc = CALLRECORDINGS
+                        String sc = CALLRECORDINGS
                         sc = sc.replaceAll('Instance_Alias', INSTANCEALIAS)
                         echo sc
                         def js = jsonParse(sc)
                         sc = toJSON(js)
                         echo sc
+                        js = null
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CALL_RECORDINGS --storage-config ${sc}", returnStdout: true).trim()
                         echo "Call Recordings : ${di}"
                     }

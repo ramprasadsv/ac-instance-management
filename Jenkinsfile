@@ -6,6 +6,10 @@ def jsonParse(def json) {
     new groovy.json.JsonSlurper().parseText(json)
 }
 
+def toJSON(def json) {
+    new groovy.json.JsonOutput().toJson(json)
+}
+
 String CONFIGDETAILS = ""
 String ARN = ""
 String INSTANCEALIAS = ""
@@ -38,7 +42,8 @@ pipeline {
                    sh(script: "ls -ltr", returnStatus: true)
                    CONFIGDETAILS = sh(script: 'cat parameters.json', returnStdout: true).trim()
                    def config = jsonParse(CONFIGDETAILS)
-                    INSTANCEALIAS = config.instanceAlias
+                    //INSTANCEALIAS = config.instanceAlias
+                    INSTANCEALIAS = "sdlkfjsdfkls"
                     ENABLEINBOUNDCALLS = config.enableInboundCalls
                     ENABLEOUTBOUNDCALLS = config.enableOutboundCalls
                     IDENTITYMANAGEMENTTYPE = config.identityManagementType
@@ -197,6 +202,10 @@ pipeline {
                     script {
                         def sc = CALLRECORDINGS
                         sc = sc.replaceAll('Instance_Alias', INSTANCEALIAS)
+                        echo sc
+                        def js = jsonParse(sc)
+                        sc = toJSON(js)
+                        echo sc
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CALL_RECORDINGS --storage-config ${sc}", returnStdout: true).trim()
                         echo "Call Recordings : ${di}"
                     }

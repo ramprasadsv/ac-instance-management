@@ -43,7 +43,7 @@ pipeline {
                    CONFIGDETAILS = sh(script: 'cat parameters.json', returnStdout: true).trim()
                    def config = jsonParse(CONFIGDETAILS)
                     //INSTANCEALIAS = config.instanceAlias
-                    INSTANCEALIAS = "sdlkfjsdfklseeeee"
+                    INSTANCEALIAS = "sdlkfjsdfklseeeeee"
                     ENABLEINBOUNDCALLS = config.enableInboundCalls
                     ENABLEOUTBOUNDCALLS = config.enableOutboundCalls
                     IDENTITYMANAGEMENTTYPE = config.identityManagementType
@@ -211,7 +211,7 @@ pipeline {
                         sc = sc.concat(",KeyId=").concat(js.S3Config.EncryptionConfig.KeyId).concat("\u007D\u007D")
                         echo sc
                         js = null
-                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CALL_RECORDINGS --storage-config ${sc}", returnStdout: true).trim()
+                        def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CALL_RECORDINGS --storage-config " + sc, returnStdout: true).trim()
                         echo "Call Recordings : ${di}"
                     }
                 }

@@ -43,7 +43,7 @@ pipeline {
                    CONFIGDETAILS = sh(script: 'cat parameters.json', returnStdout: true).trim()
                    def config = jsonParse(CONFIGDETAILS)
                     //INSTANCEALIAS = config.instanceAlias
-                    INSTANCEALIAS = "sdlkfjsdfklsddd"
+                    INSTANCEALIAS = "sdlkfjsdfklsdddd"
                     ENABLEINBOUNDCALLS = config.enableInboundCalls
                     ENABLEOUTBOUNDCALLS = config.enableOutboundCalls
                     IDENTITYMANAGEMENTTYPE = config.identityManagementType
@@ -205,6 +205,8 @@ pipeline {
                         echo sc
                         def js = jsonParse(sc)
                         sc = toJSON(js)
+                        echo sc
+                        sc = sc.replace("\"", "\\"");
                         echo sc
                         js = null
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CALL_RECORDINGS --storage-config \'${sc}\'", returnStdout: true).trim()

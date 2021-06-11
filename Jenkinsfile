@@ -206,9 +206,9 @@ pipeline {
                         def js = jsonParse(sc)
                         sc = "StorageType=S3"
                         //ssociationId=string,StorageType=string,S3Config={BucketName=string,BucketPrefix=string,EncryptionConfig={EncryptionType=string,KeyId=string}}
-                        sc = sc.concat(",S3Config=\{BucketName=").concat(js.S3Config.BucketName).concat(",BucketPrefix=").concat(js.S3Config.BucketPrefix)
-                        sc = sc.concat(",EncryptionConfig=\{EncryptionType=").concat(js.S3Config.EncryptionConfig.EncryptionType)
-                        sc = sc.concat(",KeyId=").concat(js.S3Config.EncryptionConfig.KeyId).concat("\}\}")
+                        sc = sc.concat(",S3Config=\u007BBucketName=").concat(js.S3Config.BucketName).concat(",BucketPrefix=").concat(js.S3Config.BucketPrefix)
+                        sc = sc.concat(",EncryptionConfig=\u007BEncryptionType=").concat(js.S3Config.EncryptionConfig.EncryptionType)
+                        sc = sc.concat(",KeyId=").concat(js.S3Config.EncryptionConfig.KeyId).concat("\u007D\u007D")
                         echo sc
                         js = null
                         def di =  sh(script: "aws connect associate-instance-storage-config --instance-id ${ARN} --resource-type CALL_RECORDINGS --storage-config ${sc}", returnStdout: true).trim()

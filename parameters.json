@@ -1,5 +1,5 @@
 {
-  "instanceAlias" : "backupamzninst",
+  "instanceAlias" : "backupamzninst4",
   "enableInboundCalls" : "true",
   "enableOutboundCalls" : "true",
   "identityManagementType" : "CONNECT_MANAGED",

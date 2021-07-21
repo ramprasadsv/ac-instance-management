@@ -1,5 +1,5 @@
 {
-  "instanceAlias" : "tcs-prod-instance",
+  "instanceAlias" : "amzn-prod-bldr-session",
   "enableInboundCalls" : "true",
   "enableOutboundCalls" : "true",
   "identityManagementType" : "CONNECT_MANAGED",

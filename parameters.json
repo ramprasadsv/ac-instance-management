@@ -1,5 +1,5 @@
 {
-  "instanceAlias" : "amzn-prod-bldr-session",
+  "instanceAlias" : "amzn-concentrix-dev",
   "enableInboundCalls" : "true",
   "enableOutboundCalls" : "true",
   "identityManagementType" : "CONNECT_MANAGED",

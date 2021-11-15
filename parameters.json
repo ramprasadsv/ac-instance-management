@@ -1,5 +1,5 @@
 {
-  "instanceAlias" : "amzn-concentrix-dev",
+  "instanceAlias" : "amzn-cog-dev",
   "enableInboundCalls" : "true",
   "enableOutboundCalls" : "true",
   "identityManagementType" : "CONNECT_MANAGED",
